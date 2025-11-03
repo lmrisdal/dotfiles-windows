@@ -1,0 +1,114 @@
+[
+  {
+    "winget": "Microsoft.WindowsTerminal",
+    "choco": "microsoft-windows-terminal"
+  },
+  {
+    "winget": "OBSProject.OBSStudio",
+    "choco": "obs-studio"
+  },
+  {
+    "winget": "SumatraPDF.SumatraPDF",
+    "choco": "sumatrapdf"
+  },
+  {
+    "winget": "clsid2.mpc-hc",
+    "choco": "mpc-hc-clsid2"
+  },
+  {
+    "winget": "AgileBits.1Password",
+    "choco": "1password"
+  },
+  {
+    "winget": "Notepad++.Notepad++",
+    "choco": "notepadplusplus"
+  },
+  {
+    "winget": "ForceAutoHDR.7gxycn08",
+    "choco": ""
+  },
+  {
+    "winget": "Guru3D.Afterburner",
+    "choco": "msiafterburner"
+  },
+  {
+    "winget": "Valve.Steam",
+    "choco": "steam-client"
+  },
+  {
+    "winget": "RustDesk.RustDesk",
+    "choco": "rustdesk.portable"
+  },
+  {
+    "winget": "REALiX.HWiNFO",
+    "choco": "hwinfo"
+  },
+  {
+    "winget": "rcmaehl.MSEdgeRedirect",
+    "choco": "msedgeredirect"
+  },
+  {
+    "winget": "Mozilla.Firefox",
+    "choco": "firefox"
+  },
+  {
+    "winget": "LocalSend.LocalSend",
+    "choco": "localsend.install"
+  },
+  {
+    "winget": "Spotify.Spotify",
+    "choco": "spotify"
+  },
+  {
+    "winget": "ElectronicArts.EADesktop",
+    "choco": "ea-app"
+  },
+  {
+    "winget": "Rem0o.FanControl",
+    "choco": ""
+  },
+  {
+    "winget": "Nextcloud.NextcloudDesktop",
+    "choco": "nextcloud-client"
+  },
+  {
+    "winget": "AntibodySoftware.WizTree",
+    "choco": "wiztree"
+  },
+  {
+    "winget": "Discord.Discord",
+    "choco": "discord"
+  },
+  {
+    "winget": "tailscale.tailscale",
+    "choco": "tailscale"
+  },
+  {
+    "winget": "Ubisoft.Connect",
+    "choco": "ubisoft-connect"
+  },
+  {
+    "winget": "HeroicGamesLauncher.HeroicGamesLauncher",
+    "choco": ""
+  },
+  {
+    "winget": "M2Team.NanaZip",
+    "choco": "nanazip"
+  },
+  {
+    "winget": "Nilesoft.Shell",
+    "choco": "nilesoft-shell"
+  },
+  {
+    "winget": "brianlima.uwphook",
+    "choco": ""
+  },
+  {
+    "winget": "AltSnap.AltSnap",
+    "choco": ""
+  },
+  {
+    "winget": "Blizzard.BattleNet",
+    "choco": ""
+  }
+]
