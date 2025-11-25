@@ -16,8 +16,6 @@ if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
     Write-Host "Chocolatey not found...."
     Write-Host "Run: Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"
     exit 1
-} else {
-    Write-Host "Chocolatey is already installed."
 }
 
 $jobs = @()
@@ -138,9 +136,7 @@ if ($jobs.Count -gt 0) {
     
     Write-Host "✅ Newly Installed: $successCount" -ForegroundColor Green
     Write-Host "ℹ️ Already Installed: $alreadyInstalledCount" -ForegroundColor Cyan  
-    if ($failureCount -eq 0) {
-        Write-Host "✅ Failed: $failureCount" -ForegroundColor Green
-    } else {
+    if ($failureCount -gt 0) {
         Write-Host "❌ Failed: $failureCount" -ForegroundColor Red
     }
     Write-Host "📦 Total Processed: $($successCount + $alreadyInstalledCount + $failureCount)"
