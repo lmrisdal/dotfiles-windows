@@ -103,10 +103,6 @@
     "winget": "brianlima.uwphook",
     "choco": ""
   },
-  // {
-  //   "winget": "Blizzard.BattleNet",
-  //   "choco": ""
-  // },
   {
     "winget": "AltSnap.AltSnap",
     "choco": "altsnap"
@@ -116,7 +112,7 @@
     "choco": "etcher"
   },
   {
-    "winget": "Proton.ProtonVPN",
-    "choco": "protonvpn"
+    "winget": "raycast",
+    "choco": ""
   }
 ]
