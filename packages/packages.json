@@ -1,118 +1,77 @@
-[
-  {
-    "winget": "Microsoft.WindowsTerminal",
-    "choco": "microsoft-windows-terminal"
-  },
-  {
-    "winget": "OBSProject.OBSStudio",
-    "choco": "obs-studio"
-  },
-  {
-    "winget": "SumatraPDF.SumatraPDF",
-    "choco": "sumatrapdf"
-  },
-  {
-    "winget": "clsid2.mpc-hc",
-    "choco": "mpc-hc-clsid2"
-  },
-  {
-    "winget": "AgileBits.1Password",
-    "choco": "1password"
-  },
-  {
-    "winget": "Notepad++.Notepad++",
-    "choco": "notepadplusplus"
-  },
-  {
-    "winget": "ForceAutoHDR.7gxycn08",
-    "choco": ""
-  },
-  {
-    "winget": "Guru3D.Afterburner",
-    "choco": "msiafterburner"
-  },
-  {
-    "winget": "Valve.Steam",
-    "choco": "steam-client"
-  },
-  {
-    "winget": "RustDesk.RustDesk",
-    "choco": "rustdesk.portable"
-  },
-  {
-    "winget": "REALiX.HWiNFO",
-    "choco": "hwinfo"
-  },
-  {
-    "winget": "rcmaehl.MSEdgeRedirect",
-    "choco": "msedgeredirect"
-  },
-  {
-    "winget": "Mozilla.Firefox",
-    "choco": "firefox"
-  },
-  {
-    "winget": "LocalSend.LocalSend",
-    "choco": "localsend.install"
-  },
-  {
-    "winget": "Spotify.Spotify",
-    "choco": "spotify"
-  },
-  {
-    "winget": "ElectronicArts.EADesktop",
-    "choco": "ea-app"
-  },
-  {
-    "winget": "Rem0o.FanControl",
-    "choco": ""
-  },
-  {
-    "winget": "Nextcloud.NextcloudDesktop",
-    "choco": "nextcloud-client"
-  },
-  {
-    "winget": "AntibodySoftware.WizTree",
-    "choco": "wiztree"
-  },
-  {
-    "winget": "Discord.Discord",
-    "choco": "discord"
-  },
-  {
-    "winget": "tailscale.tailscale",
-    "choco": "tailscale"
-  },
-  {
-    "winget": "Ubisoft.Connect",
-    "choco": "ubisoft-connect"
-  },
-  {
-    "winget": "HeroicGamesLauncher.HeroicGamesLauncher",
-    "choco": ""
-  },
-  {
-    "winget": "M2Team.NanaZip",
-    "choco": "nanazip"
-  },
-  {
-    "winget": "Nilesoft.Shell",
-    "choco": "nilesoft-shell"
-  },
-  {
-    "winget": "brianlima.uwphook",
-    "choco": ""
-  },
-  {
-    "winget": "AltSnap.AltSnap",
-    "choco": "altsnap"
-  },
-  {
-    "winget": "Balena.Etcher",
-    "choco": "etcher"
-  },
-  {
-    "winget": "raycast",
-    "choco": ""
-  }
-]
+{
+  "winget": [
+    "9PFXXSHC64H3", // raycast
+    "AgileBits.1Password",
+    "AltSnap.AltSnap",
+    "AntibodySoftware.WizTree",
+    "Balena.Etcher",
+    "DEVCOM.JetBrainsMonoNerdFont",
+    "Discord.Discord",
+    "ElectronicArts.EADesktop",
+    "File-New-Project.EarTrumpet",
+    "ForceAutoHDR.7gxycn08",
+    "Guru3D.Afterburner",
+    "HeroicGamesLauncher.HeroicGamesLauncher",
+    "LocalSend.LocalSend",
+    "M2Team.NanaZip",
+    "Microsoft.WindowsTerminal",
+    "Mozilla.Firefox",
+    "Nextcloud.NextcloudDesktop",
+    "Nilesoft.Shell",
+    "Notepad++.Notepad++",
+    "OBSProject.OBSStudio",
+    "Python.Python.3.13",
+    "REALiX.HWiNFO",
+    "Rem0o.FanControl",
+    "RustDesk.RustDesk",
+    "Spotify.Spotify",
+    "Starship.Starship",
+    "SumatraPDF.SumatraPDF",
+    "Ubisoft.Connect",
+    "Valve.Steam",
+    "brianlima.uwphook",
+    "clsid2.mpc-hc",
+    "glzr-io.glazewm",
+    "glzr-io.zebar",
+    "rcmaehl.MSEdgeRedirect",
+    "tailscale.tailscale"
+  ],
+  "choco": [
+    "nerd-fonts-jetbrainsmono"
+    // "nerd-fonts-firacode",
+    // "microsoft-windows-terminal",
+    // "obs-studio",
+    // "sumatrapdf",
+    // "mpc-hc-clsid2",
+    // "1password",
+    // "notepadplusplus",
+    // "msiafterburner",
+    // "steam-client",
+    // "rustdesk.portable",
+    // "hwinfo",
+    // "msedgeredirect",
+    // "firefox",
+    // "localsend.install",
+    // "spotify",
+    // "ea-app",
+    // "nextcloud-client",
+    // "wiztree",
+    // "discord",
+    // "tailscale",
+    // "ubisoft-connect",
+    // "nanazip",
+    // "nilesoft-shell",
+    // "altsnap",
+    // "etcher",
+    // "eartrumpet"
+  ],
+  "scoop": [
+    // Add scoop packages here if needed
+  ],
+  "powershell": [
+    {
+      "script": "irm https://astral.sh/uv/install.ps1 | iex",
+      "executionPolicy": "Bypass"
+    }
+  ]
+}

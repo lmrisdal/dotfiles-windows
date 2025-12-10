@@ -1,3 +1,9 @@
+param(
+    [Parameter(Position=0)]
+    [ValidateSet("winget", "choco", "scoop", "powershell", "all")]
+    [string]$Method = "all"
+)
+
 # Get the directory where this script is located
 $scriptPath = Split-Path -Parent $MyInvocation.MyCommand.Definition
 $JsonFile = Join-Path $scriptPath "packages.json"
@@ -9,87 +15,215 @@ if (-not (Test-Path $JsonFile)) {
 }
 
 # Read package list
-$packages = Get-Content $JsonFile | ConvertFrom-Json
+$packagesData = Get-Content $JsonFile | ConvertFrom-Json
 
-# Ensure Chocolatey is installed
-if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
-    Write-Host "Chocolatey not found...."
-    Write-Host "Run: Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"
-    exit 1
+# Check if running as administrator for Chocolatey packages
+if (($Method -eq "all" -or $Method -eq "choco") -and $packagesData.choco.Count -gt 0) {
+    $isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+    if (-not $isAdmin) {
+        Write-Error "Chocolatey packages require administrator privileges. Please run this script as Administrator."
+        Write-Host "Right-click PowerShell and select 'Run as Administrator', then run this script again." -ForegroundColor Yellow
+        exit 1
+    }
+}
+
+# Ensure Chocolatey is installed if needed
+if (($Method -eq "all" -or $Method -eq "choco") -and $packagesData.choco.Count -gt 0) {
+    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
+        Write-Host "Chocolatey not found...."
+        Write-Host "Run: Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"
+        exit 1
+    }
+}
+
+# Ensure Scoop is installed if needed
+if (($Method -eq "all" -or $Method -eq "scoop") -and $packagesData.scoop.Count -gt 0) {
+    if (-not (Get-Command scoop -ErrorAction SilentlyContinue)) {
+        Write-Host "Scoop not found...."
+        Write-Host "Run: Set-ExecutionPolicy RemoteSigned -Scope CurrentUser; Invoke-RestMethod -Uri https://get.scoop.sh | Invoke-Expression"
+        exit 1
+    }
 }
 
 $jobs = @()
 
-foreach ($pkg in $packages) {
-    if ($pkg.winget -and $pkg.winget.Trim() -ne "") {
-        Write-Host "Queuing winget installation: $($pkg.winget)"
-        $job = Start-Job -ScriptBlock {
-            param($packageId)
-            try {
-                $result = winget install --id $packageId --accept-package-agreements --accept-source-agreements
-                $output = $result -join "`n"
-                
-                # Check for specific success/info conditions
-                $isAlreadyInstalled = $output -match "No available upgrade found|No newer version was found|already installed"
-                $isSuccess = ($LASTEXITCODE -eq 0) -or $isAlreadyInstalled
-                
-                return @{
-                    Success = $isSuccess
-                    PackageId = $packageId
-                    Method = "winget"
-                    Output = $output
-                    ExitCode = $LASTEXITCODE
-                    IsAlreadyInstalled = $isAlreadyInstalled
+# Process winget packages (first)
+if (($Method -eq "all" -or $Method -eq "winget") -and $packagesData.winget) {
+    foreach ($packageId in $packagesData.winget) {
+        if ($packageId -and $packageId.Trim() -ne "") {
+            Write-Host "Queuing winget installation: $packageId"
+            $job = Start-Job -ScriptBlock {
+                param($packageId)
+                try {
+                    $result = winget install --id $packageId --accept-package-agreements --accept-source-agreements 2>&1
+                    $output = $result -join "`n"
+                    
+                    # Check for specific success/info conditions
+                    $isAlreadyInstalled = $output -match "No available upgrade found|No newer version was found|already installed"
+                    $isSuccess = ($LASTEXITCODE -eq 0) -or $isAlreadyInstalled
+                    
+                    return @{
+                        Success = $isSuccess
+                        PackageId = $packageId
+                        Method = "winget"
+                        Output = $output
+                        ExitCode = $LASTEXITCODE
+                        IsAlreadyInstalled = $isAlreadyInstalled
+                    }
                 }
-            }
-            catch {
-                return @{
-                    Success = $false
-                    PackageId = $packageId
-                    Method = "winget"
-                    Output = $_.Exception.Message
-                    ExitCode = -1
-                    IsAlreadyInstalled = $false
+                catch {
+                    return @{
+                        Success = $false
+                        PackageId = $packageId
+                        Method = "winget"
+                        Output = $_.Exception.Message
+                        ExitCode = -1
+                        IsAlreadyInstalled = $false
+                    }
                 }
-            }
-        } -ArgumentList $pkg.winget
-        $jobs += $job
-        
-    } elseif ($pkg.choco -and $pkg.choco.Trim() -ne "") {
-        $job = Start-Job -ScriptBlock {
-            param($packageId)
-            try {
-                $result = choco install $packageId -y 2>&1
-                $output = $result -join "`n"
-                
-                # Check for specific success/info conditions
-                $isAlreadyInstalled = $output -match "already installed|same version of .* is already installed"
-                $isSuccess = ($LASTEXITCODE -eq 0) -or $isAlreadyInstalled
-                
-                return @{
-                    Success = $isSuccess
-                    PackageId = $packageId
-                    Method = "choco"
-                    Output = $output
-                    ExitCode = $LASTEXITCODE
-                    IsAlreadyInstalled = $isAlreadyInstalled
+            } -ArgumentList $packageId
+            $jobs += $job
+        }
+    }
+}
+
+# Wait for winget jobs to complete before starting choco
+if ($jobs.Count -gt 0) {
+    Write-Host "`nWaiting for winget installations to complete..." -ForegroundColor Cyan
+    Wait-Job -Job $jobs | Out-Null
+}
+
+# Process choco packages (second)
+if (($Method -eq "all" -or $Method -eq "choco") -and $packagesData.choco) {
+    foreach ($packageId in $packagesData.choco) {
+        if ($packageId -and $packageId.Trim() -ne "") {
+            Write-Host "Queuing choco installation: $packageId"
+            $job = Start-Job -ScriptBlock {
+                param($packageId)
+                try {
+                    $result = choco install $packageId -y 2>&1
+                    $output = $result -join "`n"
+                    
+                    # Check for specific success/info conditions
+                    $isAlreadyInstalled = $output -match "already installed|same version of .* is already installed"
+                    $isSuccess = ($LASTEXITCODE -eq 0) -or $isAlreadyInstalled
+                    
+                    return @{
+                        Success = $isSuccess
+                        PackageId = $packageId
+                        Method = "choco"
+                        Output = $output
+                        ExitCode = $LASTEXITCODE
+                        IsAlreadyInstalled = $isAlreadyInstalled
+                    }
                 }
-            }
-            catch {
-                return @{
-                    Success = $false
-                    PackageId = $packageId
-                    Method = "choco"
-                    Output = $_.Exception.Message
-                    ExitCode = -1
-                    IsAlreadyInstalled = $false
+                catch {
+                    return @{
+                        Success = $false
+                        PackageId = $packageId
+                        Method = "choco"
+                        Output = $_.Exception.Message
+                        ExitCode = -1
+                        IsAlreadyInstalled = $false
+                    }
                 }
-            }
-        } -ArgumentList $pkg.choco
-        $jobs += $job
-        
-    } else {
-        Write-Warning "Skipping entry - no valid package defined: $($pkg | ConvertTo-Json -Compress)"
+            } -ArgumentList $packageId
+            $jobs += $job
+        }
+    }
+}
+
+# Wait for choco jobs to complete before starting scoop
+if ($jobs.Count -gt 0) {
+    Write-Host "`nWaiting for choco installations to complete..." -ForegroundColor Cyan
+    Wait-Job -Job $jobs | Out-Null
+}
+
+# Process scoop packages (third)
+if (($Method -eq "all" -or $Method -eq "scoop") -and $packagesData.scoop) {
+    foreach ($packageId in $packagesData.scoop) {
+        if ($packageId -and $packageId.Trim() -ne "") {
+            Write-Host "Queuing scoop installation: $packageId"
+            $job = Start-Job -ScriptBlock {
+                param($packageId)
+                try {
+                    $result = scoop install $packageId 2>&1
+                    $output = $result -join "`n"
+                    
+                    # Check for specific success/info conditions
+                    $isAlreadyInstalled = $output -match "is already installed"
+                    $isSuccess = ($LASTEXITCODE -eq 0) -or $isAlreadyInstalled
+                    
+                    return @{
+                        Success = $isSuccess
+                        PackageId = $packageId
+                        Method = "scoop"
+                        Output = $output
+                        ExitCode = $LASTEXITCODE
+                        IsAlreadyInstalled = $isAlreadyInstalled
+                    }
+                }
+                catch {
+                    return @{
+                        Success = $false
+                        PackageId = $packageId
+                        Method = "scoop"
+                        Output = $_.Exception.Message
+                        ExitCode = -1
+                        IsAlreadyInstalled = $false
+                    }
+                }
+            } -ArgumentList $packageId
+            $jobs += $job
+        }
+    }
+}
+
+# Wait for scoop jobs to complete before starting PowerShell scripts
+if ($jobs.Count -gt 0) {
+    Write-Host "`nWaiting for scoop installations to complete..." -ForegroundColor Cyan
+    Wait-Job -Job $jobs | Out-Null
+}
+
+# Process PowerShell scripts (last)
+if (($Method -eq "all" -or $Method -eq "powershell") -and $packagesData.powershell) {
+    foreach ($psScript in $packagesData.powershell) {
+        if ($psScript.script) {
+            Write-Host "Queuing PowerShell script execution: $($psScript.script)"
+            $job = Start-Job -ScriptBlock {
+                param($script, $policy)
+                try {
+                    # Set execution policy if specified
+                    if ($policy) {
+                        Set-ExecutionPolicy -ExecutionPolicy $policy -Scope Process -Force
+                    }
+                    
+                    # Execute the PowerShell script
+                    $result = Invoke-Expression $script 2>&1
+                    $output = $result -join "`n"
+                    
+                    return @{
+                        Success = $LASTEXITCODE -eq 0 -or $null -eq $LASTEXITCODE
+                        PackageId = $script.Substring(0, [Math]::Min(50, $script.Length))
+                        Method = "powershell"
+                        Output = $output
+                        ExitCode = if ($null -eq $LASTEXITCODE) { 0 } else { $LASTEXITCODE }
+                        IsAlreadyInstalled = $false
+                    }
+                }
+                catch {
+                    return @{
+                        Success = $false
+                        PackageId = $script.Substring(0, [Math]::Min(50, $script.Length))
+                        Method = "powershell"
+                        Output = $_.Exception.Message
+                        ExitCode = -1
+                        IsAlreadyInstalled = $false
+                    }
+                }
+            } -ArgumentList $psScript.script, $psScript.executionPolicy
+            $jobs += $job
+        }
     }
 }
 
@@ -140,6 +274,8 @@ if ($jobs.Count -gt 0) {
         Write-Host "❌ Failed: $failureCount" -ForegroundColor Red
     }
     Write-Host "📦 Total Processed: $($successCount + $alreadyInstalledCount + $failureCount)"
+    exit 0
 } else {
     Write-Host "No packages to install."
+    exit 0
 }
