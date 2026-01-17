@@ -34,7 +34,8 @@
     "glzr-io.glazewm",
     "glzr-io.zebar",
     "rcmaehl.MSEdgeRedirect",
-    "tailscale.tailscale"
+    "tailscale.tailscale",
+    "Overwolf.CurseForge"
   ],
   "choco": [
     "nerd-fonts-jetbrainsmono"
