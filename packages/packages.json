@@ -1,5 +1,6 @@
 {
   "winget": [
+    "Git.Git",
     "9PFXXSHC64H3", // raycast
     "AgileBits.1Password",
     "AltSnap.AltSnap",
@@ -35,7 +36,8 @@
     "glzr-io.zebar",
     "rcmaehl.MSEdgeRedirect",
     "tailscale.tailscale",
-    "Overwolf.CurseForge"
+    "Overwolf.CurseForge",
+    "Zen-Team.Zen-Browser"
   ],
   "choco": [
     "nerd-fonts-jetbrainsmono"
