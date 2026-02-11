@@ -16,7 +16,6 @@
     "LocalSend.LocalSend",
     "M2Team.NanaZip",
     "Microsoft.WindowsTerminal",
-    "Mozilla.Firefox",
     "Nextcloud.NextcloudDesktop",
     "Nilesoft.Shell",
     "Notepad++.Notepad++",
@@ -37,7 +36,8 @@
     "rcmaehl.MSEdgeRedirect",
     "tailscale.tailscale",
     "Overwolf.CurseForge",
-    "Zen-Team.Zen-Browser"
+    "Zen-Team.Zen-Browser",
+    "RamenSoftware.Windhawk"
   ],
   "choco": [
     "nerd-fonts-jetbrainsmono"
