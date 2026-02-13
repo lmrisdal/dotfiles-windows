@@ -37,7 +37,8 @@
     "tailscale.tailscale",
     "Overwolf.CurseForge",
     "Zen-Team.Zen-Browser",
-    "RamenSoftware.Windhawk"
+    "RamenSoftware.Windhawk",
+    "jeffvli.Feishin"
   ],
   "choco": [
     "nerd-fonts-jetbrainsmono"
